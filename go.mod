@@ -3,9 +3,11 @@ module github.com/livekit/nats-test
 go 1.19
 
 require (
+	github.com/gammazero/workerpool v1.1.3
 	github.com/livekit/cloud-protocol v0.0.2-0.20221124063443-b4be17dba6fa
 	github.com/livekit/protocol v1.1.3-0.20221003181058-44a5ed6b4d13
 	github.com/nats-io/nats.go v1.20.0
+	gopkg.in/yaml.v3 v3.0.1
 )
 
 require (
@@ -14,6 +16,7 @@ require (
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/eapache/channels v1.1.0 // indirect
 	github.com/eapache/queue v1.1.0 // indirect
+	github.com/gammazero/deque v0.2.0 // indirect
 	github.com/go-logr/logr v1.2.3 // indirect
 	github.com/go-logr/zapr v1.2.3 // indirect
 	github.com/go-redis/redis/v8 v8.11.5 // indirect
