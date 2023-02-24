@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/nats-io/nats.go"
@@ -63,4 +64,58 @@ func setupStream(nc *nats.Conn, js nats.JetStreamContext, c *Config, name string
 	}
 	logger.Infow("created or updated JetStream", "name", name)
 	return err
+}
+
+type NatsConfig struct {
+	URL                    string `yaml:"url"`
+	ClientName             string `yaml:"-"`
+	JetStreamReplicas      int    `yaml:"jetstream_replicas"`
+	PublishAsyncMaxPending int    `yaml:"publish_async_max_pending"`
+}
+
+func CreateNatsConnection(conf *NatsConfig, name string) (*nats.Conn, error) {
+	if name == "" {
+		name = conf.ClientName
+	}
+	return nats.Connect(conf.URL,
+		nats.Name(name),
+		nats.PingInterval(30*time.Second),
+		nats.MaxPingsOutstanding(4), // close connection after 2 minutes of missed pings
+		nats.DiscoveredServersHandler(func(nc *nats.Conn) {
+			logger.Infow("nats discovered servers",
+				"discoveredServers", strings.Join(nc.DiscoveredServers(), ", "),
+			)
+		}),
+		nats.DisconnectErrHandler(func(nc *nats.Conn, err error) {
+			logger.Errorw("nats disconnected", err,
+				"serverName", nc.ConnectedServerName(),
+			)
+		}),
+		nats.ReconnectHandler(func(nc *nats.Conn) {
+			logger.Infow("nats reconnect",
+				"serverName", nc.ConnectedServerName(),
+			)
+		}),
+		nats.ErrorHandler(func(conn *nats.Conn, subscription *nats.Subscription, err error) {
+			var values []interface{}
+			if conn != nil {
+				values = append(values,
+					"reconnects", conn.Reconnects,
+					"numSubscriptions", conn.NumSubscriptions(),
+					"connectedAddr", conn.ConnectedAddr(),
+					"connectedClusterName", conn.ConnectedClusterName(),
+					"connectedServerId", conn.ConnectedServerId(),
+					"connectedServerName", conn.ConnectedServerName(),
+					"isClosed", conn.IsClosed(),
+					"isConnected", conn.IsConnected(),
+					"isDraining", conn.IsDraining(),
+					"isReconnecting", conn.IsReconnecting(),
+				)
+			}
+			if subscription != nil {
+				values = append(values, "subject", subscription.Subject)
+			}
+			logger.Errorw("nats error", err, values...)
+		}),
+	)
 }

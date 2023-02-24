@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: dz-nats-producer
+  name: lk-nats-test-producer
   namespace: default
   labels:
-    app: dz-nats-producer
+    app: lk-nats-test-producer
 spec:
   replicas: 0
   selector:
     matchLabels:
-      app: dz-nats-producer
+      app: lk-nats-test-producer
   template:
     metadata:
       labels:
-        app: dz-nats-producer
+        app: lk-nats-test-producer
     spec:
       containers:
         - name: nats-test
-          image: thedavidzhao/nats-test:6
+          image: livekit/nats-test:1
           env:
             - name: NATS_TEST_CONFIG
               value: |
@@ -35,8 +35,6 @@ spec:
       restartPolicy: Always
       terminationGracePeriodSeconds: 120
       dnsPolicy: ClusterFirst
-      imagePullSecrets:
-        - name: dockerhub
       affinity:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
@@ -45,8 +43,8 @@ spec:
                   - key: app
                     operator: In
                     values:
-                      - dz-nats-producer
-                      - dz-nats-consumer
+                      - lk-nats-test-producer
+                      - lk-nats-test-consumer
               topologyKey: kubernetes.io/hostname
             - labelSelector:
                 matchExpressions:

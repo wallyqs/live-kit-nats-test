@@ -5,7 +5,6 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/livekit/cloud-protocol/messaging"
 	"github.com/livekit/protocol/logger"
 )
 
@@ -14,13 +13,13 @@ type Config struct {
 	NumRooms   int  `yaml:"num_rooms"`
 	UsePooling bool `yaml:"use_pooling"`
 	// number of messages per room / sec
-	MessageRate            int                  `yaml:"message_rate"`
-	ProducersPerRoom       int                  `yaml:"producers_per_room"`
-	ConsumersPerRoom       int                  `yaml:"consumers_per_room"`
-	MessageRetentionSec    int                  `yaml:"message_retention_sec"`
-	ConsumersPerConnection int                  `yaml:"consumers_per_connection"`
-	NATS                   messaging.NatsConfig `yaml:"nats"`
-	Logging                logger.Config        `yaml:"logging"`
+	MessageRate            int           `yaml:"message_rate"`
+	ProducersPerRoom       int           `yaml:"producers_per_room"`
+	ConsumersPerRoom       int           `yaml:"consumers_per_room"`
+	MessageRetentionSec    int           `yaml:"message_retention_sec"`
+	ConsumersPerConnection int           `yaml:"consumers_per_connection"`
+	NATS                   NatsConfig    `yaml:"nats"`
+	Logging                logger.Config `yaml:"logging"`
 }
 
 func NewConfig() (*Config, error) {
@@ -33,7 +32,7 @@ func NewConfig() (*Config, error) {
 		ProducersPerRoom:       1,
 		MessageRetentionSec:    10,
 		ConsumersPerConnection: 10,
-		NATS: messaging.NatsConfig{
+		NATS: NatsConfig{
 			URL:                    "nats://localhost:4000",
 			JetStreamReplicas:      3,
 			PublishAsyncMaxPending: 200000,

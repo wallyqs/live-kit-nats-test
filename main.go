@@ -12,7 +12,6 @@ import (
 	"github.com/gammazero/workerpool"
 	"github.com/nats-io/nats.go"
 
-	"github.com/livekit/cloud-protocol/messaging"
 	"github.com/livekit/protocol/logger"
 )
 
@@ -20,12 +19,11 @@ func main() {
 	conf, err := NewConfig()
 	if err != nil {
 		panic("failed to parse config: " + err.Error())
-		return
 	}
 	logger.InitFromConfig(conf.Logging, "nats-test")
 
 	// create nats connection for setup
-	nc, err := messaging.CreateNatsConnection(&conf.NATS)
+	nc, err := CreateNatsConnection(&conf.NATS, "")
 	if err != nil {
 		logger.Errorw("could not create nats connection", err)
 		return
@@ -231,11 +229,11 @@ func main() {
 	logger.Infow("avg stats", avg.Fields(duration)...)
 }
 
-func createConnections(natsConfig *messaging.NatsConfig, numConnections int) ([]*nats.Conn, error) {
-	//numConnections := c.ConsumersPerRoom * c.NumRooms / c.ConsumersPerConnection
+func createConnections(natsConfig *NatsConfig, numConnections int) ([]*nats.Conn, error) {
+	// numConnections := c.ConsumersPerRoom * c.NumRooms / c.ConsumersPerConnection
 	conns := make([]*nats.Conn, 0, numConnections)
 	for i := 0; i < numConnections; i++ {
-		nc, err := messaging.CreateNatsConnection(natsConfig)
+		nc, err := CreateNatsConnection(natsConfig, "")
 		if err != nil {
 			return nil, err
 		}
