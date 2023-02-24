@@ -40,7 +40,7 @@ func setupStream(nc *nats.Conn, js nats.JetStreamContext, c *Config, name string
 		Retention: nats.LimitsPolicy,
 		Discard:   nats.DiscardOld,
 		MaxAge:    maxAge,
-		Storage:   nats.MemoryStorage,
+		Storage:   nats.FileStorage,
 		Replicas:  c.NATS.JetStreamReplicas,
 		Placement: &nats.Placement{
 			Cluster: nc.ConnectedClusterName(),
